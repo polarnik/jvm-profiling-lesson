@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>qa.load</groupId>
+        <artifactId>jvm-profiling-lesson</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>qa.load</groupId>
+    <artifactId>jmeter</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>jmeter-http</module>
+        <module>jmeter-http-boost</module>
+        <module>jmeter-jdbc</module>
+        <module>jmeter-poolSize</module>
+        <module>jmeter-postProcessor</module>
+        <module>jmeter-preProcessor</module>
+        <module>jmeter-javaScript</module>
+        <module>jmeter-collection</module>
+        <module>jmeter-groovy-vs-java</module>
+        <module>jmeter-logging</module>
+        <module>jmeter-xml</module>
+        <module>jmeter-include</module>
+    </modules>
+
+    <properties>
+        <jmx>test</jmx>
+        <duration>100</duration>
+        <rampUp>5</rampUp>
+        <threads>5</threads>
+        <loop>50000</loop>
+    </properties>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.lazerycode.jmeter</groupId>
+                <artifactId>jmeter-maven-plugin</artifactId>
+                <version>${jmeter.maven.plugin.version}</version>
+
+                <executions>
+                    <!-- Generate JMeter configuration -->
+                    <execution>
+                        <id>configuration</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>configure</goal>
+                        </goals>
+                    </execution>
+                    <!-- Run JMeter tests -->
+                    <execution>
+                        <id>jmeter-tests</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>jmeter</goal>
+                        </goals>
+                    </execution>
+                    <!-- Fail build on errors in test -->
+                    <execution>
+                        <id>jmeter-check-results</id>
+                        <goals>
+                            <goal>results</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <testFilesIncluded>
+                        <jMeterTestFile>${jmx}.jmx</jMeterTestFile>
+                    </testFilesIncluded>
+                    <!--
+                    <jmeterVersion>${jmeter.version}</jmeterVersion>
+                    -->
+
+                    <jmeterExtensions>
+                        <!-- Custom Thread Groups
+                        https://jmeter-plugins.org/?search=jpgc-casutg
+                        http://repo.maven.apache.org/maven2/kg/apc/jmeter-plugins-casutg/
+                        <artifact>kg.apc:jmeter-plugins-casutg:2.9</artifact>
+                        -->
+                    </jmeterExtensions>
+
+                    <junitLibraries>
+                        <!-- JMeter Plugins Common Classes: Various utility classes to ease development of plugins
+                        http://repo.maven.apache.org/maven2/kg/apc/jmeter-plugins-cmn-jmeter/
+                        <artifact>kg.apc:jmeter-plugins-cmn-jmeter:0.6</artifact>
+                        -->
+                        <artifact>org.postgresql:postgresql:42.2.20</artifact>
+                    </junitLibraries>
+                    <!--
+                    <downloadExtensionDependencies>false</downloadExtensionDependencies>
+                    <downloadLibraryDependencies>true</downloadLibraryDependencies>
+                    <downloadOptionalDependencies>false</downloadOptionalDependencies>
+                    <downloadJMeterDependencies>true</downloadJMeterDependencies>
+                    -->
+
+                    <propertiesUser>
+                        <data.dir>${project.basedir}/src/test/jmeter/data</data.dir>
+
+                        <duration>${duration}</duration>
+                        <rampUp>${rampUp}</rampUp>
+                        <threads>${threads}</threads>
+                        <loop>${loop}</loop>
+                    </propertiesUser>
+
+                    <propertiesJMeter>
+                        <jmeter.save.saveservice.thread_counts>true</jmeter.save.saveservice.thread_counts>
+                        <jmeter.save.saveservice.subresults>true</jmeter.save.saveservice.subresults>
+                        <sample_variables></sample_variables>
+                        <!-- # Disable sent statistics to https://jmeter-plugins.org/stats/ -->
+                        <jpgc.repo.sendstats>false</jpgc.repo.sendstats>
+                        <sampleresult.default.encoding>UTF-8</sampleresult.default.encoding>
+                    </propertiesJMeter>
+
+                    <testResultsTimestamp>false</testResultsTimestamp>
+                    <overrideRootLogLevel>INFO</overrideRootLogLevel>
+                    <suppressJMeterOutput>false</suppressJMeterOutput>
+                    <ignoreResultFailures>true</ignoreResultFailures>
+                    <guiTestFile>${project.basedir}/src/test/jmeter/${jmx}.jmx</guiTestFile>
+                    <propertiesReplacedByCustomFiles>true</propertiesReplacedByCustomFiles>
+
+
+                    <propertiesReportGenerator>
+                        <jmeter.reportgenerator.overall_granularity>1000</jmeter.reportgenerator.overall_granularity>
+                        <jmeter.reportgenerator.graph.responseTimeDistribution.property.set_granularity>1000</jmeter.reportgenerator.graph.responseTimeDistribution.property.set_granularity>
+                    </propertiesReportGenerator>
+
+
+
+                    <resultsFileFormat>csv</resultsFileFormat>
+                    <generateReports>false</generateReports>
+                    <resultsDirectory>${project.build.directory}/jmeter/results/</resultsDirectory>
+                    <reportDirectory>${project.build.directory}/jmeter/results</reportDirectory>
+
+
+
+                    <!-- Configuring the jvm that the jmeter process runs in
+                    https://github.com/jmeter-maven-plugin/jmeter-maven-plugin/wiki/Configuring-the-jvm-that-the-jmeter-process-runs-in
+                    http://reins.altervista.org/java/A_Collection_of_JVM_Options_MP.html
+                    https://www.oracle.com/technetwork/java/javase/tech/vmoptions-jsp-140102.html
+                    -->
+                    <jMeterProcessJVMSettings>
+                        <xms>32</xms>
+                        <xmx>512</xmx>
+                        <arguments>
+                            <argument>-XX:MaxMetaspaceSize=256m</argument>
+
+                            <argument>-XX:+UseG1GC</argument>
+                            <argument>-XX:MaxGCPauseMillis=100</argument>
+                            <argument>-XX:G1ReservePercent=20</argument>
+
+                            <argument>-Duser.language=en</argument>
+                            <argument>-Duser.region=EN</argument>
+
+                            <argument>-Dfile.encoding=UTF-8</argument>
+
+                            <argument>-XX:-HeapDumpOnOutOfMemoryError</argument>
+                            <argument>-server</argument>
+                        </arguments>
+                    </jMeterProcessJVMSettings>
+
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>JFR</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.lazerycode.jmeter</groupId>
+                        <artifactId>jmeter-maven-plugin</artifactId>
+                        <version>${jmeter.maven.plugin.version}</version>
+
+                        <configuration>
+                            <jMeterProcessJVMSettings>
+                                <arguments>
+                                    <argument>-XX:+UnlockCommercialFeatures</argument>
+
+                                    <argument>-XX:+FlightRecorder</argument>
+                                    <argument>-XX:+UnlockDiagnosticVMOptions</argument>
+                                    <argument>-XX:+DebugNonSafepoints</argument>
+
+                                    <argument>-XX:StartFlightRecording=delay=0s,duration=300s,name=Trace-Apache.JMeter,filename=${project.build.directory}/jmeter/results/${performancetest.script}-${maven.build.timestamp}.jfr,settings=${project.basedir}/src/test/conf/jmc/Profiling.JMeter.jfc</argument>
+                                </arguments>
+                            </jMeterProcessJVMSettings>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>JMX-RMI</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.lazerycode.jmeter</groupId>
+                        <artifactId>jmeter-maven-plugin</artifactId>
+                        <version>${jmeter.maven.plugin.version}</version>
+
+                        <configuration>
+                            <jMeterProcessJVMSettings>
+                                <arguments>
+                                    <argument>-Dcom.sun.management.jmxremote</argument>
+
+                                    <argument>-Dcom.sun.management.jmxremote.port=9011</argument>
+                                    <argument>-Dcom.sun.management.jmxremote.rmi.port=9011</argument>
+                                    <argument>-Dcom.sun.management.jmxremote.local.only=true</argument>
+                                    <argument>-Dcom.sun.management.jmxremote.authenticate=false</argument>
+                                    <argument>-Dcom.sun.management.jmxremote.ssl=false</argument>
+                                    <argument>-Djava.rmi.server.hostname=127.0.0.1</argument>
+                                </arguments>
+                            </jMeterProcessJVMSettings>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

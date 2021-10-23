@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>JVM Profiling Lesson</name>
+    <groupId>qa.load</groupId>
+    <artifactId>jvm-profiling-lesson</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <description>JVM (Apache.JMeter) Profiling Lesson</description>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>junitSampler</module>
+        <module>javaRequest</module>
+        <module>jmeter</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>11</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+
+        <maven.compiler.plugin.version></maven.compiler.plugin.version>
+        <jmeter.maven.plugin.version>3.4.0</jmeter.maven.plugin.version>
+        <jmeter.version>5.4.1</jmeter.version>
+    </properties>
+
+    <developers>
+        <developer>
+            <id>polarnik</id>
+            <name>SMIRNOV Vyacheslav</name>
+            <email>owasp@yandex.ru</email>
+            <url>https://github.com/polarnik</url>
+        </developer>
+    </developers>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+
+                    <configuration>
+                        <compilerArgs>
+                        </compilerArgs>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>
